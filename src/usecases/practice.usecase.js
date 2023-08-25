@@ -50,7 +50,7 @@ async function updateById(practiceId, practiceObject) {
         throw new createError(400, "Invalid id");
     }
 
-    const practiceUpdated = await Practice.findByIdAndUpdate(practiceId, practiceObject, {new: true}).populate({path: 'koder', select: "firstName lastName program email"});
+    const practiceUpdated = await Practice.findByIdAndUpdate(practiceId, practiceObject, {new: true, runValidators: true}).populate({path: 'koder', select: "firstName lastName program email"});
     if(!practiceUpdated) {
         throw new createError(404, "practice not found");
     }

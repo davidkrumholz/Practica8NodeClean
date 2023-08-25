@@ -89,11 +89,16 @@ router.patch("/:id", async (request, response) => {
             },
         });
     } catch (error) {
-        response.status(error.status || 500);
-        response.json({
-            message: "something went wrong",
-            error: error.message,
-        });
+      const status = error.name === "ValidationError" ? 400 : 500;
+    const keys = Object.keys(error.errors);
+    const errorValues = Object.entries(error.errors).reduce((accum, current, index) => {
+      return [...accum, {key: keys[index], message:current[1].message}]
+    },[]);
+      response.status(status);
+      response.json({
+          message: "something went wrong",
+          error: errorValues,
+      });
     }
 });
 

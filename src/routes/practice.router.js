@@ -51,14 +51,19 @@ router.post("/", async (request, response) => {
         });
     } catch (error) {
         const status = error.name === "ValidationError" ? 400 : error.status;
-        const keys = Object.keys(error.errors);
-        const errorValues = Object.entries(error.errors).reduce((accum, current, index) => {
-            return [...accum, {key: keys[index], message:current[1].message}];
-        },[]);
-        response.status(status || 500);
+        let errorValues;
+        if(error.errors === undefined) {
+            errorValues = error.message;
+        } else {
+            const keys = Object.keys(error.errors);
+            errorValues = Object.entries(error.errors).reduce((accum, current, index) => {
+                return [...accum, {key: keys[index], message:current[1].message}];
+            },[]);
+        }
+        response.status(status);
         response.json({
             message: "something went wrong",
-            error: errorValues
+            error: error
         });
     }
 });
@@ -93,10 +98,15 @@ router.patch("/:id", async (request,response) => {
             },
         })
     } catch (error) {
-        response.status(error.status || 500);
+        const status = error.name === "ValidationError" ? 400 : error.status;
+        const keys = Object.keys(error.errors);
+        const errorValues = Object.entries(error.errors).reduce((accum, current, index) => {
+            return [...accum, {key: keys[index], message:current[1].message}];
+        },[]);
+        response.status(status);
         response.json({
             message: "Something went wrong",
-            error: error.message,
+            error: errorValues,
         });
     }
 });
