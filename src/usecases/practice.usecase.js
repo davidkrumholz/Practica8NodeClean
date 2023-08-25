@@ -4,7 +4,7 @@ const Practice = require("../models/practice.model");
 const Koder = require("../models/koders.model");
 
 async function getAll() {
-    const allPractice = await Practice.find().populate('koder');
+    const allPractice = await Practice.find().populate({path: 'koder', select: "firstName lastName program email"});
     return allPractice;
 }
 
@@ -13,7 +13,7 @@ async function getById(practiceId) {
         throw new createError(400, "Invalid id");
     }
 
-    const practice = await Practice.findById(practiceId).populate('koder');
+    const practice = await Practice.findById(practiceId).populate({path: 'koder', select: "firstName lastName program email"});
     if(!practice) {
         throw new createError(404, "Practice not found");
     }
@@ -50,7 +50,7 @@ async function updateById(practiceId, practiceObject) {
         throw new createError(400, "Invalid id");
     }
 
-    const practiceUpdated = await Practice.findByIdAndUpdate(practiceId, practiceObject, {new: true}).populate('koder');
+    const practiceUpdated = await Practice.findByIdAndUpdate(practiceId, practiceObject, {new: true}).populate({path: 'koder', select: "firstName lastName program email"});
     if(!practiceUpdated) {
         throw new createError(404, "practice not found");
     }
